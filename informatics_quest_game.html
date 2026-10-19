@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>INFORMATICS QUEST — DIGITAL MISSION (KELAS VIII)</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome / Lucide Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            900: '#060B19',
+                            800: '#0B132B',
+                            700: '#1C2541',
+                        },
+                        electric: '#0052FF',
+                        cyan: '#00F0FF',
+                        violet: '#7000FF',
+                        magenta: '#FF007A',
+                        neonYellow: '#FFE600',
+                    },
+                    fontFamily: {
+                        title: ['Montserrat', 'Poppins', 'sans-serif'],
+                        body: ['Inter', 'Poppins', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 4s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glow: {
+                            '0%': { filter: 'drop-shadow(0 0 5px rgba(0,240,255,0.4))' },
+                            '100%': { filter: 'drop-shadow(0 0 20px rgba(0,240,255,0.9))' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #060B19;
+            color: #FFFFFF;
+            font-family: 'Inter', 'Poppins', sans-serif;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Glassmorphism Styling */
+        .glass-card {
+            background: rgba(11, 19, 43, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-card-glow {
+            background: rgba(11, 19, 43, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 240, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+        }
+
+        .neon-border-cyan {
+            border: 1px solid #00F0FF;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+        }
+
+        .neon-border-magenta {
+            border: 1px solid #FF007A;
+            box-shadow: 0 0 10px rgba(255, 0, 122, 0.4);
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #0052FF 0%, #7000FF 100%);
+            transition: all 0.2s ease;
+            box-shadow: 0 0 15px rgba(0, 82, 255, 0.4);
+        }
+
+        .btn-action:active {
+            transform: scale(0.96);
+        }
+
+        /* Background Animated Particles Grid */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #060B19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1C2541;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00F0FF;
+        }
+
+        /* Shake Animation for Wrong Answer */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Page Transitions */
+        .page-view {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .page-view.active {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-navy-900 bg-grid relative pb-10 text-slate-100 flex flex-col justify-between">
+
+    <!-- Ambient Glow Background Blur -->
+    <div class="fixed -top-40 -left-40 w-96 h-96 bg-cyan/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="fixed -bottom-40 -right-40 w-96 h-96 bg-violet/30 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-md w-full mx-auto px-4 py-6 relative z-10 flex-1 flex flex-col justify-center">
+
+        <!-- ================= HALAMAN 1: WELCOME ================= -->
+        <section id="view-welcome" class="page-view active text-center space-y-6">
+            <!-- Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan/10 border border-cyan/30 text-cyan text-xs font-semibold uppercase tracking-wider">
+                <i class="fa-solid fa-gamepad"></i> Digital Mission 2026
+            </div>
+
+            <!-- Header -->
+            <div class="space-y-2">
+                <h1 class="text-3xl font-black font-title tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-violet drop-shadow-sm">
+                    INFORMATICS QUEST
+                </h1>
+                <p class="text-xs font-bold uppercase tracking-widest text-cyan">KELAS VIII SMP</p>
+            </div>
+
+            <!-- Visual Graphic / Avatar -->
+            <div class="relative w-48 h-48 mx-auto flex items-center justify-center">
+                <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan to-violet opacity-30 animate-pulse-slow blur-xl"></div>
+                <div class="glass-card-glow rounded-3xl p-6 w-full h-full flex flex-col items-center justify-center border-2 border-cyan/40 animate-float">
+                    <i class="fa-solid fa-laptop-code text-6xl text-cyan mb-2"></i>
+                    <div class="flex gap-2 text-xs font-mono text-cyan/80">
+                        <span>01001</span>
+                        <span>10110</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quest Cards Summary Badges -->
+            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div class="glass-card p-2 rounded-xl border border-white/10">
+                    <i class="fa-solid fa-bullseye text-cyan text-lg mb-1 block"></i>
+                    <span class="font-bold text-slate-200">25 MISSION</span>
+                </div>
+                <div class="glass-card p-2 rounded-xl border border-white/10">
+                    <i class="fa-solid fa-brain text-violet-400 text-lg mb-1 block"></i>
+                    <span class="font-bold text-slate-200">INFORMATICS</span>
+                </div>
+                <div class="glass-card p-2 rounded-xl border border-white/10">
+                    <i class="fa-solid fa-trophy text-neonYellow text-lg mb-1 block"></i>
+                    <span class="font-bold text-slate-200">SCORE 100</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="glass-card p-4 rounded-2xl text-slate-300 text-sm leading-relaxed border border-white/10">
+                “Jelajahi dunia digital. Pelajari konsepnya. Selesaikan 25 misi. Buktikan kemampuanmu!”
+            </div>
+
+            <!-- CTA Button -->
+            <button onclick="switchView('view-profile')" class="w-full py-4 rounded-2xl btn-action text-white font-title font-extrabold text-base tracking-wide flex items-center justify-center gap-3 group border border-cyan/40">
+                <span>START MISSION</span>
+                <i class="fa-solid fa-rocket group-hover:translate-x-1 transition-transform"></i>
+            </button>
+        </section>
+
+        <!-- ================= HALAMAN 2: PLAYER PROFILE ================= -->
+        <section id="view-profile" class="page-view space-y-6">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 mx-auto rounded-2xl bg-cyan/10 border border-cyan/40 flex items-center justify-center text-cyan text-xl mb-2">
+                    <i class="fa-solid fa-user-astronaut"></i>
+                </div>
+                <h2 class="text-2xl font-black font-title text-transparent bg-clip-text bg-gradient-to-r from-white to-cyan">
+                    CREATE YOUR PROFILE
+                </h2>
+                <p class="text-xs text-slate-400">Siapkan identitasmu sebelum memulai misi.</p>
+            </div>
+
+            <form id="form-profile" onsubmit="saveProfile(event)" class="glass-card p-6 rounded-3xl space-y-5 border border-white/10">
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-cyan tracking-wider uppercase">Nama Lengkap</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="player-name" required placeholder="Masukkan nama lengkap..." 
+                            class="w-full pl-11 pr-4 py-3 bg-navy-800/80 border border-cyan/30 rounded-xl text-white text-sm focus:outline-none focus:border-cyan focus:ring-1 focus:ring-cyan transition-all">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-cyan tracking-wider uppercase">Kelas</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-users-rectangle absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <select id="player-class" required 
+                            class="w-full pl-11 pr-4 py-3 bg-navy-800/80 border border-cyan/30 rounded-xl text-white text-sm focus:outline-none focus:border-cyan focus:ring-1 focus:ring-cyan transition-all appearance-none">
+                            <option value="" disabled selected>Pilih Kelas...</option>
+                            <option value="8A">8A</option>
+                            <option value="8B">8B</option>
+                            <option value="8C">8C</option>
+                            <option value="8D">8D</option>
+                            <option value="8E">8E</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div id="profile-warning" class="hidden text-xs text-magenta font-semibold bg-magenta/10 p-3 rounded-lg border border-magenta/30 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span id="warning-msg">Nama dan Kelas wajib diisi!</span>
+                </div>
+
+                <button type="submit" class="w-full py-4 rounded-xl btn-action text-white font-title font-extrabold text-sm tracking-wider uppercase flex items-center justify-center gap-2">
+                    <span>CONTINUE</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- ================= HALAMAN ALREADY COMPLETED ================= -->
+        <section id="view-completed" class="page-view text-center space-y-6">
+            <div class="w-20 h-20 mx-auto rounded-full bg-magenta/20 border-2 border-magenta flex items-center justify-center text-magenta text-3xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-2xl font-black font-title text-magenta">MISSION ALREADY COMPLETED</h2>
+                <p class="text-sm text-slate-300 px-4">
+                    Ulangan dengan nama dan kelas tersebut sudah tercatat dalam basis data sistem.
+                </p>
+            </div>
+            <div class="glass-card p-4 rounded-2xl text-xs text-slate-400 border border-white/10">
+                Satu akun pemain hanya diperbolehkan menyelesaikan pengerjaan sebanyak <strong class="text-cyan">1 kali</strong>.
+            </div>
+        </section>
+
+        <!-- ================= REVIEW MATERI 4 HALAMAN ================= -->
+        <section id="view-review" class="page-view space-y-4">
+            <!-- Review Navigation Header -->
+            <div class="flex items-center justify-between glass-card px-4 py-2 rounded-xl border border-white/10">
+                <span class="text-xs font-bold text-cyan uppercase tracking-widest" id="review-step-label">REVIEW 01 / 04</span>
+                <div class="flex gap-1" id="review-dots">
+                    <div class="w-2 h-2 rounded-full bg-cyan"></div>
+                    <div class="w-2 h-2 rounded-full bg-slate-600"></div>
+                    <div class="w-2 h-2 rounded-full bg-slate-600"></div>
+                    <div class="w-2 h-2 rounded-full bg-slate-600"></div>
+                </div>
+            </div>
+
+            <!-- REVIEW PAGE 1 -->
+            <div id="review-page-1" class="review-page-content space-y-4">
+                <div class="glass-card p-4 rounded-2xl border border-cyan/30 space-y-3">
+                    <div class="flex items-center gap-2 text-cyan font-title font-bold text-sm">
+                        <i class="fa-solid fa-brain text-base"></i>
+                        <span>BERPIKIR KOMPUTASIONAL</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Berpikir komputasional adalah cara berpikir sistematis untuk menyelesaikan masalah.
+                    </p>
+
+                    <!-- 4 Konsep Grid -->
+                    <div class="grid grid-cols-2 gap-2 text-xs pt-1">
+                        <div class="bg-navy-800/80 p-2.5 rounded-xl border border-white/10">
+                            <span class="font-bold text-cyan block mb-1">🔹 DEKOMPOSISI</span>
+                            <p class="text-[11px] text-slate-300">Memecah masalah besar menjadi bagian-bagian kecil agar lebih mudah diselesaikan.</p>
+                        </div>
+                        <div class="bg-navy-800/80 p-2.5 rounded-xl border border-white/10">
+                            <span class="font-bold text-violet-400 block mb-1">🔹 PENGENALAN POLA</span>
+                            <p class="text-[11px] text-slate-300">Mencari kesamaan atau pola yang muncul pada suatu masalah.</p>
+                        </div>
+                        <div class="bg-navy-800/80 p-2.5 rounded-xl border border-white/10">
+                            <span class="font-bold text-magenta block mb-1">🔹 ABSTRAKSI</span>
+                            <p class="text-[11px] text-slate-300">Memilih informasi penting & mengabaikan yang tidak diperlukan.</p>
+                        </div>
+                        <div class="bg-navy-800/80 p-2.5 rounded-xl border border-white/10">
+                            <span class="font-bold text-neonYellow block mb-1">🔹 ALGORITMA</span>
+                            <p class="text-[11px] text-slate-300">Langkah-langkah tersusun secara urut & sistematis.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 rounded-2xl border border-violet/30 space-y-3">
+                    <div class="flex items-center gap-2 text-violet-400 font-title font-bold text-sm">
+                        <i class="fa-solid fa-gear text-base"></i>
+                        <span>MENGENAL FUNGSI</span>
+                    </div>
+                    <p class="text-xs text-slate-300">Fungsi dapat dipahami sebagai proses yang mengubah <strong>INPUT</strong> menjadi <strong>OUTPUT</strong>.</p>
+
+                    <div class="bg-navy-900/90 p-3 rounded-xl border border-white/10 flex items-center justify-between text-center text-xs">
+                        <div class="bg-cyan/20 px-3 py-1.5 rounded-lg border border-cyan/40 font-bold text-cyan">INPUT (4)</div>
+                        <i class="fa-solid fa-arrow-right text-slate-400"></i>
+                        <div class="bg-violet/20 px-3 py-1.5 rounded-lg border border-violet/40 font-bold text-violet-300">f(x) = x²</div>
+                        <i class="fa-solid fa-arrow-right text-slate-400"></i>
+                        <div class="bg-neonYellow/20 px-3 py-1.5 rounded-lg border border-neonYellow/40 font-bold text-neonYellow">OUTPUT (16)</div>
+                    </div>
+
+                    <p class="text-[11px] text-slate-400 italic text-center">
+                        “Perhatikan apa yang masuk, proses yang dilakukan, dan hasil yang keluar.”
+                    </p>
+                </div>
+            </div>
+
+            <!-- REVIEW PAGE 2 -->
+            <div id="review-page-2" class="review-page-content hidden space-y-4">
+                <div class="glass-card p-4 rounded-2xl border border-cyan/30 space-y-3">
+                    <div class="flex items-center gap-2 text-cyan font-title font-bold text-sm">
+                        <i class="fa-solid fa-table text-base"></i>
+                        <span>FUNGSI DASAR SPREADSHEET</span>
+                    </div>
+                    <p class="text-xs text-slate-300">Spreadsheet dapat membantu mengolah data dengan cepat.</p>
+
+                    <div class="divide-y divide-white/10 text-xs bg-navy-800/80 rounded-xl overflow-hidden border border-white/10">
+                        <div class="p-2 flex justify-between"><strong>SUM</strong><span class="text-slate-300">➜ Menjumlahkan data</span></div>
+                        <div class="p-2 flex justify-between"><strong>AVERAGE</strong><span class="text-slate-300">➜ Rata-rata data</span></div>
+                        <div class="p-2 flex justify-between"><strong>COUNT</strong><span class="text-slate-300">➜ Banyaknya data</span></div>
+                        <div class="p-2 flex justify-between"><strong>MAX</strong><span class="text-slate-300">➜ Nilai terbesar</span></div>
+                    </div>
+
+                    <div class="bg-navy-900/80 p-2.5 rounded-xl border border-cyan/20 flex justify-around text-xs text-center font-mono">
+                        <div><div class="text-slate-400 text-[10px]">DATA</div><div class="font-bold text-white">10 | 20 | 30</div></div>
+                        <div><div class="text-cyan text-[10px]">SUM</div><div class="font-bold text-cyan">60</div></div>
+                        <div><div class="text-neonYellow text-[10px]">AVG</div><div class="font-bold text-neonYellow">20</div></div>
+                        <div><div class="text-magenta text-[10px]">MAX</div><div class="font-bold text-magenta">30</div></div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 rounded-2xl border border-violet/30 space-y-2 text-xs">
+                    <div class="font-title font-bold text-cyan">🗂️ SORTING, FILTERING, FORMATTING</div>
+                    <p><strong>🔄 SORTING:</strong> Mengurutkan data (Contoh: 90, 70, 80 ➜ 70, 80, 90).</p>
+                    <p><strong>🔎 FILTERING:</strong> Menampilkan data kriteria tertentu (Siswa nilai ≥ 80).</p>
+                    <p><strong>🎨 FORMATTING:</strong> Mengatur tampilan data agar rapi dan mudah dibaca.</p>
+                </div>
+
+                <div class="glass-card p-3 rounded-xl border border-neonYellow/30 text-xs space-y-1">
+                    <span class="font-bold text-neonYellow">⚡ BERPIKIR EFISIEN:</span>
+                    <p class="text-slate-300">Pilih langkah tepat, teratur, tidak berulang, dan efisien.</p>
+                </div>
+            </div>
+
+            <!-- REVIEW PAGE 3 -->
+            <div id="review-page-3" class="review-page-content hidden space-y-4">
+                <div class="glass-card p-4 rounded-2xl border border-cyan/30 space-y-3">
+                    <div class="flex items-center gap-2 text-cyan font-title font-bold text-sm">
+                        <i class="fa-solid fa-globe text-base"></i>
+                        <span>PENGGUNA INTERNET CERDAS</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                        <div class="bg-navy-800 p-2 rounded-lg">🔎 1. Periksa sumbernya</div>
+                        <div class="bg-navy-800 p-2 rounded-lg">📅 2. Periksa tanggalnya</div>
+                        <div class="bg-navy-800 p-2 rounded-lg">🔄 3. Bandingkan sumber</div>
+                        <div class="bg-navy-800 p-2 rounded-lg">🤔 4. Masuk akal?</div>
+                    </div>
+                    <div class="text-center bg-magenta/20 border border-magenta/40 p-2 rounded-xl text-magenta font-bold text-xs uppercase tracking-wider">
+                        “JANGAN LANGSUNG SHARE. PERIKSA DULU!”
+                    </div>
+                </div>
+
+                <div class="glass-card p-4 rounded-2xl border border-violet/30 space-y-2 text-xs">
+                    <div class="font-title font-bold text-violet-300">🔐 PASSWORD YANG AMAN</div>
+                    <p class="text-slate-300">Gunakan kombinasi karakter, tidak mudah ditebak. JANGAN bagikan password atau kode OTP!</p>
+                </div>
+
+                <div class="glass-card p-4 rounded-2xl border border-neonYellow/30 space-y-2 text-xs">
+                    <div class="font-title font-bold text-neonYellow">👣 JEJAK DIGITAL & KOMUNITAS ONLINE</div>
+                    <p class="text-slate-300">Rekam aktivitas online (foto, komentar, postingan). Gunakan bahasa sopan dan hargai orang lain saat berdiskusi online.</p>
+                </div>
+            </div>
+
+            <!-- REVIEW PAGE 4 -->
+            <div id="review-page-4" class="review-page-content hidden space-y-4">
+                <div class="glass-card p-4 rounded-2xl border border-cyan/30 space-y-3">
+                    <div class="flex items-center gap-2 text-cyan font-title font-bold text-sm">
+                        <i class="fa-solid fa-circles-intersect text-base"></i>
+                        <span>DIAGRAM VENN & SISTEM BILANGAN</span>
+                    </div>
+                    
+                    <div class="bg-navy-800/80 p-3 rounded-xl border border-white/10 text-xs space-y-1">
+                        <div class="font-bold text-cyan">⭕ DIAGRAM VENN (A ∩ B)</div>
+                        <p class="text-slate-300">Bagian irisan A dan B: "Anggota yang sama-sama terdapat pada kelompok A dan B".</p>
+                    </div>
+
+                    <div class="bg-navy-800/80 p-3 rounded-xl border border-white/10 text-xs space-y-2">
+                        <div class="font-bold text-violet-300">🔢 SISTEM BILANGAN</div>
+                        <div class="grid grid-cols-2 gap-1 text-[11px]">
+                            <div>🔵 Desimal: 0–9</div>
+                            <div>🟣 Biner: 0 dan 1</div>
+                            <div>🟢 Oktal: 0–7</div>
+                            <div>🟠 Heksadesimal: 0–9 & A–F</div>
+                        </div>
+                        <div class="p-2 bg-violet/20 rounded-lg text-center font-bold text-cyan text-[11px]">
+                            ⭐ Komputer menggunakan biner (0️⃣ dan 1️⃣)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checklist & Closing -->
+                <div class="glass-card p-4 rounded-2xl border border-neonYellow/40 space-y-2 text-xs">
+                    <div class="font-bold text-neonYellow">🎯 CHECKLIST SEBELUM ULANGAN</div>
+                    <ul class="space-y-1 text-slate-300 text-[11px]">
+                        <li>✅ Saya sudah membaca materi & memahami konsep</li>
+                        <li>✅ Saya akan membaca soal dengan teliti & jujur</li>
+                    </ul>
+                </div>
+
+                <div class="text-center text-xs text-cyan italic">
+                    “Pahami konsepnya, jangan hanya menghafal jawabannya. Semangat dan kerjakan dengan jujur! 💙”
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex gap-3 pt-2">
+                <button id="btn-review-prev" onclick="changeReviewPage(-1)" disabled class="w-1/2 py-3 rounded-xl bg-slate-800 text-slate-500 font-bold text-xs flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> SEBELUMNYA
+                </button>
+                <button id="btn-review-next" onclick="changeReviewPage(1)" class="w-1/2 py-3 rounded-xl btn-action text-white font-bold text-xs flex items-center justify-center gap-2">
+                    <span>LANJUT</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= READY CHECK ================= -->
+        <section id="view-ready" class="page-view text-center space-y-6">
+            <div class="w-20 h-20 mx-auto rounded-3xl bg-cyan/10 border-2 border-cyan flex items-center justify-center text-cyan text-3xl animate-bounce">
+                <i class="fa-solid fa-flag-checkered"></i>
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-2xl font-black font-title text-white">🎯 READY FOR MISSION?</h2>
+                <p class="text-xs text-slate-300">Materi review sudah selesai dipelajari.</p>
+            </div>
+
+            <div class="glass-card p-5 rounded-2xl text-left space-y-3 border border-white/10 text-xs">
+                <div class="flex items-center gap-3 text-cyan">
+                    <i class="fa-solid fa-circle-check text-base"></i>
+                    <span>Saya sudah membaca materi review.</span>
+                </div>
+                <div class="flex items-center gap-3 text-cyan">
+                    <i class="fa-solid fa-circle-check text-base"></i>
+                    <span>Saya sudah memahami konsep utama.</span>
+                </div>
+                <div class="flex items-center gap-3 text-cyan">
+                    <i class="fa-solid fa-circle-check text-base"></i>
+                    <span>Saya siap mengikuti Digital Mission.</span>
+                </div>
+            </div>
+
+            <button onclick="switchView('view-map')" class="w-full py-4 rounded-2xl btn-action text-white font-title font-extrabold text-sm tracking-wider uppercase flex items-center justify-center gap-2">
+                <span>ENTER DIGITAL WORLD</span>
+                <i class="fa-solid fa-globe"></i>
+            </button>
+        </section>
+
+        <!-- ================= DIGITAL MISSION MAP ================= -->
+        <section id="view-map" class="page-view space-y-5">
+            <div class="text-center space-y-1">
+                <h2 class="text-2xl font-black font-title text-transparent bg-clip-text bg-gradient-to-r from-cyan to-violet">
+                    🗺️ DIGITAL MISSION MAP
+                </h2>
+                <p class="text-xs text-slate-400">Pilih node misi yang terbuka untuk melanjutkan.</p>
+            </div>
+
+            <!-- Zones Accordion / List -->
+            <div class="space-y-3" id="map-zones-container">
+                <!-- Map Nodes generated dynamically via JS -->
+            </div>
+
+            <button onclick="openCurrentMission()" class="w-full py-3.5 rounded-xl btn-action text-white font-title font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2">
+                <span>LANJUTKAN MISI AKSTIF</span>
+                <i class="fa-solid fa-gamepad"></i>
+            </button>
+        </section>
+
+        <!-- ================= MISSION / QUIZ SCREEN ================= -->
+        <section id="view-mission" class="page-view space-y-4">
+            <!-- Header Progress -->
+            <div class="space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                    <span id="mission-zone-badge" class="px-2.5 py-1 rounded-md bg-cyan/10 border border-cyan/30 text-cyan font-bold uppercase tracking-wider">
+                        BRAIN ZONE
+                    </span>
+                    <span id="mission-step-counter" class="font-mono font-bold text-slate-300">
+                        MISSION 01 / 25
+                    </span>
+                </div>
+
+                <!-- Animated Progress Bar -->
+                <div class="w-full bg-navy-800 rounded-full h-2.5 overflow-hidden border border-white/10">
+                    <div id="mission-progress-bar" class="bg-gradient-to-r from-cyan to-violet h-full transition-all duration-500 rounded-full" style="width: 4%;"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="glass-card p-5 rounded-2xl border border-white/10 space-y-4">
+                <p id="question-text" class="text-sm text-slate-100 font-medium leading-relaxed">
+                    Loading Question...
+                </p>
+
+                <!-- Options -->
+                <div id="options-container" class="space-y-2.5 pt-1">
+                    <!-- Options buttons dynamically injected -->
+                </div>
+            </div>
+
+            <!-- Immediate Feedback Card -->
+            <div id="feedback-card" class="hidden glass-card p-4 rounded-2xl border transition-all duration-300 space-y-2">
+                <div id="feedback-title" class="font-title font-extrabold text-sm flex items-center gap-2">
+                    <!-- Title injected -->
+                </div>
+                <p id="feedback-explanation" class="text-xs text-slate-300 leading-relaxed">
+                    <!-- Explanation injected -->
+                </p>
+            </div>
+
+            <!-- Next Mission Button -->
+            <button id="btn-next-mission" disabled onclick="nextMission()" class="w-full py-3.5 rounded-xl bg-slate-800 text-slate-500 font-title font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2 transition-all">
+                <span>NEXT MISSION</span>
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </section>
+
+        <!-- ================= FINAL CHECK ================= -->
+        <section id="view-final" class="page-view text-center space-y-6">
+            <div class="w-20 h-20 mx-auto rounded-3xl bg-violet/20 border-2 border-violet flex items-center justify-center text-violet-300 text-3xl animate-bounce">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+
+            <div class="space-y-2">
+                <h2 class="text-2xl font-black font-title text-white">🏁 FINAL CHECK</h2>
+                <p class="text-xs font-bold text-cyan tracking-widest uppercase">YOU'RE ALMOST THERE!</p>
+            </div>
+
+            <div class="glass-card p-6 rounded-3xl border border-white/10 space-y-3">
+                <div class="text-3xl font-black text-neonYellow font-title">25 / 25</div>
+                <div class="text-xs text-slate-300">Semua misi digital telah berhasil diselesaikan!</div>
+                <div class="text-[11px] text-slate-400">Tekan tombol di bawah untuk mengirim hasil akhir dan membuka gelar pencapaianmu.</div>
+            </div>
+
+            <button id="btn-submit-final" onclick="submitFinalResult()" class="w-full py-4 rounded-2xl btn-action text-white font-title font-extrabold text-sm tracking-wider uppercase flex items-center justify-center gap-2">
+                <span>SUBMIT MISSION</span>
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </section>
+
+        <!-- ================= RESULT SCREEN ================= -->
+        <section id="view-result" class="page-view text-center space-y-6">
+            <div class="space-y-1">
+                <div class="inline-block px-3 py-1 rounded-full bg-neonYellow/10 border border-neonYellow/30 text-neonYellow text-xs font-bold uppercase tracking-wider mb-2">
+                    🎉 MISSION COMPLETE!
+                </div>
+                <h2 class="text-3xl font-black font-title text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-violet">
+                    DIGITAL MASTER
+                </h2>
+            </div>
+
+            <!-- Large Score Display -->
+            <div class="relative w-44 h-44 mx-auto flex items-center justify-center">
+                <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan to-magenta opacity-30 animate-pulse blur-xl"></div>
+                <div class="glass-card-glow rounded-full w-full h-full border-4 border-cyan flex flex-col items-center justify-center">
+                    <span id="final-score" class="text-5xl font-black font-title text-white">0</span>
+                    <span class="text-[10px] text-cyan font-bold tracking-widest uppercase">OUT OF 100</span>
+                </div>
+            </div>
+
+            <!-- Stats Breakdown -->
+            <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="glass-card p-3 rounded-2xl border border-emerald-500/30 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">✓</div>
+                    <div class="text-left">
+                        <div class="text-slate-400 text-[10px]">BENAR</div>
+                        <div id="stat-correct" class="font-bold text-white text-base">0</div>
+                    </div>
+                </div>
+                <div class="glass-card p-3 rounded-2xl border border-magenta/30 flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-magenta/20 text-magenta flex items-center justify-center font-bold">✕</div>
+                    <div class="text-left">
+                        <div class="text-slate-400 text-[10px]">SALAH</div>
+                        <div id="stat-wrong" class="font-bold text-white text-base">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements Unlocked -->
+            <div class="glass-card p-4 rounded-2xl border border-white/10 space-y-2 text-left">
+                <div class="text-[11px] font-bold text-cyan uppercase tracking-wider mb-2">🏆 ACHIEVEMENTS UNLOCKED</div>
+                <div class="flex items-center gap-3 text-xs">
+                    <i class="fa-solid fa-award text-neonYellow text-lg"></i>
+                    <div>
+                        <div class="font-bold text-white">DIGITAL EXPLORER</div>
+                        <div class="text-[10px] text-slate-400">Menyelesaikan seluruh 25 Misi Informatika</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="submit-status-msg" class="text-xs text-cyan italic">
+                Data sedang dikirim ke database guru...
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER BRANDING -->
+    <footer class="text-center py-3 text-[10px] text-slate-500 relative z-10">
+        INFORMATICS QUEST &copy; 2026 — DIGITAL EDUCATION PLATFORM KELAS VIII
+    </footer>
+
+    <!-- JS LOGIC -->
+    <script>
+        // ================= CONFIGURATION & DATA =================
+        const GOOGLE_SHEETS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwYH8xwB0PaT9Mb-8HHK_QAvEy8KOwGsaSsOuOLHF8ynocSjCjVp9AYoO_WZI5-XLvK/exec";
+
+        let currentReviewPage = 1;
+        let playerProfile = { name: '', class: '' };
+        let currentMissionIndex = 0;
+        let userAnswers = new Array(25).fill(null);
+        let missionLocked = new Array(25).fill(false);
+        let score = 0;
+
+        // 25 QUESTIONS DATA
+        const questionsData = [
+            // MISSION 01 - 05: MIND ZONE (Computational Thinking & Functions)
+            {
+                id: 1,
+                zone: "🧠 MIND ZONE",
+                question: "1. Mengubah masalah kompleks menjadi beberapa bagian kecil yang lebih mudah dikelola adalah prinsip computational thinking yang disebut...",
+                options: ["A. Dekomposisi", "B. Pengenalan Pola", "C. Abstraksi", "D. Algoritma"],
+                correct: 0,
+                explanation: "Dekomposisi adalah proses memecah masalah besar menjadi komponen-kompenen kecil yang lebih mudah diselesaikan."
+            },
+            {
+                id: 2,
+                zone: "🧠 MIND ZONE",
+                question: "2. Saat mencari kemiripan atau kesamaan cara menyelesaikan masalah yang pernah ditemui sebelumnya, kita menerapkan konsep...",
+                options: ["A. Abstraksi", "B. Pengenalan Pola", "C. Algoritma", "D. Dekomposisi"],
+                correct: 1,
+                explanation: "Pengenalan pola fokus pada pencarian kesamaan karakteristik atau keteraturan dalam suatu masalah."
+            },
+            {
+                id: 3,
+                zone: "🧠 MIND ZONE",
+                question: "3. Memilih informasi utama yang relevan dan mengabaikan rincian yang tidak penting dalam masalah disebut...",
+                options: ["A. Algoritma", "B. Dekomposisi", "C. Abstraksi", "D. Pengenalan Pola"],
+                correct: 2,
+                explanation: "Abstraksi bekerja dengan menyaring detail yang tidak perlu dan memfokuskan perhatian pada inti informasi."
+            },
+            {
+                id: 4,
+                zone: "🧠 MIND ZONE",
+                question: "4. Urutan langkah-langkah logis dan terstruktur untuk menyelesaikan suatu permasalahan disebut...",
+                options: ["A. Algoritma", "B. Variabel", "C. Abstraksi", "D. Dekomposisi"],
+                correct: 0,
+                explanation: "Algoritma adalah susunan langkah logis dan sistematis untuk memecahkan suatu masalah dari awal sampai akhir."
+            },
+            {
+                id: 5,
+                zone: "🧠 MIND ZONE",
+                question: "5. Sebuah fungsi f(x) memproses nilai masukan x dengan rumus f(x) = 2x + 3. Jika input x = 5, berapakah nilai output-nya?",
+                options: ["A. 10", "B. 12", "C. 13", "D. 15"],
+                correct: 2,
+                explanation: "Proses fungsi: f(5) = (2 × 5) + 3 = 10 + 3 = 13."
+            },
+
+            // MISSION 06 - 10: DATA ZONE (Spreadsheet)
+            {
+                id: 6,
+                zone: "💻 DATA ZONE",
+                question: "6. Pada perangkat lunak spreadsheet, fungsi matematika yang digunakan untuk menjumlahkan sekumpulan data dalam suatu range adalah...",
+                options: ["A. AVERAGE", "B. SUM", "C. COUNT", "D. MAX"],
+                correct: 1,
+                explanation: "Fungsi SUM digunakan khusus untuk menghitung total akumulasi nilai dari sekumpulan data."
+            },
+            {
+                id: 7,
+                zone: "💻 DATA ZONE",
+                question: "7. Jika kamu ingin mengetahui nilai rata-rata dari angka di sel A1 sampai A10, rumus fungsi spreadsheet yang benar adalah...",
+                options: ["A. =SUM(A1:A10)", "B. =COUNT(A1:A10)", "C. =AVERAGE(A1:A10)", "D. =MAX(A1:A10)"],
+                correct: 2,
+                explanation: "Fungsi =AVERAGE(A1:A10) menghitung nilai rata-rata dari seluruh sel dalam rentang tersebut."
+            },
+            {
+                id: 8,
+                zone: "💻 DATA ZONE",
+                question: "8. Fitur pada spreadsheet yang berguna untuk mengurutkan daftar nama siswa secara alfabetis dari A ke Z dinamakan...",
+                options: ["A. Filtering", "B. Formatting", "C. Sorting", "D. Grouping"],
+                correct: 2,
+                explanation: "Sorting (pengurutan) berguna mengurutkan data secara Ascending (A-Z, 0-9) atau Descending."
+            },
+            {
+                id: 9,
+                zone: "💻 DATA ZONE",
+                question: "9. Apabila kamu hanya ingin menampilkan data siswa yang memperoleh nilai ulangan di atas 80 pada tabel, fitur yang paling tepat digunakan adalah...",
+                options: ["A. Sorting", "B. Filtering", "C. Formatting", "D. Aligning"],
+                correct: 1,
+                explanation: "Filtering digunakan untuk menyaring dan menyembunyikan data yang tidak memenuhi kriteria tertentu."
+            },
+            {
+                id: 10,
+                zone: "💻 DATA ZONE",
+                question: "10. Mengubah warna latar belakang tabel, menebalkan font judul, dan mengatur tata letak sel merupakan bagian dari proses...",
+                options: ["A. Formatting", "B. Sorting", "C. Filtering", "D. Calculating"],
+                correct: 0,
+                explanation: "Formatting berfokus pada penyuntingan visual dan estetika tabel agar data mudah dibaca."
+            },
+
+            // MISSION 11 - 15: CYBER ZONE (Algorithmic Efficiency & Internet Literacy)
+            {
+                id: 11,
+                zone: "🌐 CYBER ZONE",
+                question: "11. Sebuah algoritma dikatakan efisien apabila memenuhi kriteria berikut, yaitu...",
+                options: [
+                    "A. Menggunakan langkah yang banyak agar detail",
+                    "B. Tepat, teratur, tidak berulang tanpa tujuan, dan hemat waktu",
+                    "C. Hasilnya selalu berubah-ubah",
+                    "D. Langkah-langkahnya rumit dan susah dipahami"
+                ],
+                correct: 1,
+                explanation: "Algoritma efisien menyelesaikan masalah dengan langkah paling singkat, tepat, dan hemat sumber daya."
+            },
+            {
+                id: 12,
+                zone: "🌐 CYBER ZONE",
+                question: "12. Tindakan pertama yang paling tepat dilakukan saat menerima kabar mengejutkan di internet sebelum membagikannya adalah...",
+                options: [
+                    "A. Langsung membagikannya ke semua grup",
+                    "B. Memeriksa kebenaran sumber dan tanggal informasi",
+                    "C. Mengedit tulisan agar lebih menarik",
+                    "D. Membalas pesan dengan marah"
+                ],
+                correct: 1,
+                explanation: "Selalu lakukan verifikasi sumber dan tanggal informasi untuk menghindari penyebaran hoaks."
+            },
+            {
+                id: 13,
+                zone: "🌐 CYBER ZONE",
+                question: "13. Karakteristik kata sandi (password) yang tergolong aman dari peretasan adalah...",
+                options: [
+                    "A. Tanggal lahir sendiri",
+                    "B. Kombinasi huruf besar, huruf kecil, angka, dan simbol",
+                    "C. Angka berurutan seperti 123456",
+                    "D. Nama panggilan sehari-hari"
+                ],
+                correct: 1,
+                explanation: "Password kuat menggabungkan variasi jenis karakter agar sulit ditebak oleh sistem peretas."
+            },
+            {
+                id: 14,
+                zone: "🌐 CYBER ZONE",
+                question: "14. Kode rahasia sekali pakai (OTP) yang dikirimkan via SMS saat login akun sebaiknya...",
+                options: [
+                    "A. Diberikan kepada siapa saja yang meminta",
+                    "B. Dijaga kerahasiaannya dan tidak diberikan kepada siapapun",
+                    "C. Diposting di media sosial",
+                    "D. Ditulis di tempat umum"
+                ],
+                correct: 1,
+                explanation: "Kode OTP adalah verifikasi keamanan tingkat tinggi yang tidak boleh dibagikan kepada siapapun."
+            },
+            {
+                id: 15,
+                zone: "🌐 CYBER ZONE",
+                question: "15. Manakah dari hal berikut yang merupakan praktik keamanan digital yang baik saat menggunakan komputer umum?",
+                options: [
+                    "A. Menyimpan password di browser",
+                    "B. Selalu Logout dari akun setelah selesai",
+                    "C. Membiarkan akun tetap terbuka",
+                    "D. Memberikan kata sandi ke petugas lab"
+                ],
+                correct: 1,
+                explanation: "Selalu lakukan Logout dari semua akun pribadi saat selesai menggunakan perangkat umum."
+            },
+
+            // MISSION 16 - 20: SOCIAL ZONE (Digital Footprint & Online Communities)
+            {
+                id: 16,
+                zone: "👣 SOCIAL ZONE",
+                question: "16. Rekam jejak dari seluruh aktivitas, unggahan, dan interaksi seseorang di dunia digital yang berpotensi tersimpan lama disebut...",
+                options: ["A. Jejak Digital", "B. Rekam Medis", "C. Riwayat Browser", "D. Sertifikat Digital"],
+                correct: 0,
+                explanation: "Jejak digital (Digital Footprint) adalah jejak data yang kita tinggalkan saat menggunakan internet."
+            },
+            {
+                id: 17,
+                zone: "👣 SOCIAL ZONE",
+                question: "17. Contoh tindakan yang mencerminkan jejak digital positif adalah...",
+                options: [
+                    "A. Mengunggah komentar pedas di akun orang lain",
+                    "B. Membagikan hasil karya pendidikan dan tutorial bermanfaat",
+                    "C. Menyebarkan rumor yang belum terbukti",
+                    "D. Menggunakan identitas palsu untuk menipu"
+                ],
+                correct: 1,
+                explanation: "Membagikan karya bermanfaat membangun reputasi digital yang sehat dan bermanfaat."
+            },
+            {
+                id: 18,
+                zone: "👣 SOCIAL ZONE",
+                question: "18. Saat berdiskusi di dalam forum atau komunitas online, etika berkomunikasi yang harus dijaga adalah...",
+                options: [
+                    "A. Memotong pembicaraan dengan kata kasar",
+                    "B. Menghargai pendapat orang lain dan berbahasa sopan",
+                    "C. Memaksa semua orang menyetujui pendapat kita",
+                    "D. Mengirim spam berulang kali"
+                ],
+                correct: 1,
+                explanation: "Netiket (etika internet) mewajibkan penggunaan bahasa sopan dan penghormatan terhadap pendapat sesama."
+            },
+            {
+                id: 19,
+                zone: "👣 SOCIAL ZONE",
+                question: "19. Apabila kamu melihat tindakan perundungan siber (cyberbullying) pada temanmu di media sosial, langkah bijak yang dilakukan adalah...",
+                options: [
+                    "A. Ikut tertawa dan membagikan postingan tersebut",
+                    "B. Melaporkan (report) konten dan mendukung teman secara positif",
+                    "C. Membalas dengan kata-kata yang lebih kasar",
+                    "D. Membiarkan saja agar makin ramai"
+                ],
+                correct: 1,
+                explanation: "Laporkan konten berbahaya dan berikan dukungan positif untuk menghentikan dampak buruk perundungan."
+            },
+            {
+                id: 20,
+                zone: "👣 SOCIAL ZONE",
+                question: "20. Dampak jangka panjang dari jejak digital yang negatif dapat mempengaruhi...",
+                options: [
+                    "A. Kecepatan koneksi internet",
+                    "B. Kapasitas memori HP",
+                    "C. Reputasi diri dan peluang masa depan (sekolah/kerja)",
+                    "D. Ukuran layar laptop"
+                ],
+                correct: 2,
+                explanation: "Institusi pendidikan dan perusahaan modern sering memeriksa jejak digital untuk menilai karakter calon anggota."
+            },
+
+            // MISSION 21 - 25: LOGIC ZONE (Venn Diagrams & Number Systems)
+            {
+                id: 21,
+                zone: "🔢 LOGIC ZONE",
+                question: "21. Dalam diagram Venn, himpunan bagian irisan (A ∩ B) menunjukkan...",
+                options: [
+                    "A. Seluruh anggota kelompok A saja",
+                    "B. Seluruh anggota kelompok B saja",
+                    "C. Anggota yang sama-sama dimiliki oleh kelompok A dan kelompok B",
+                    "D. Anggota yang tidak ada di A maupun B"
+                ],
+                correct: 2,
+                explanation: "Irisan (A ∩ B) mewakili elemen-elemen yang berada di dalam kedua himpunan sekaligus."
+            },
+            {
+                id: 22,
+                zone: "🔢 LOGIC ZONE",
+                question: "22. Sistem bilangan yang menjadi bahasa dasar pemrosesan data pada komputer berbasis dua simbol (0 dan 1) dinamakan...",
+                options: ["A. Sistem Biner", "B. Sistem Desimal", "C. Sistem Oktal", "D. Sistem Heksadesimal"],
+                correct: 0,
+                explanation: "Komputer mengolah sinyal elektronik menggunakan sistem biner yang berbasis angka 0 dan 1."
+            },
+            {
+                id: 23,
+                zone: "🔢 LOGIC ZONE",
+                question: "23. Sistem bilangan yang digunakan manusia dalam kehidupan sehari-hari berbasis sepuluh simbol (0–9) dinamakan...",
+                options: ["A. Biner", "B. Desimal", "C. Oktal", "D. Heksadesimal"],
+                correct: 1,
+                explanation: "Sistem desimal adalah sistem bilangan basis 10 yang menggunakan angka 0, 1, 2, 3, 4, 5, 6, 7, 8, dan 9."
+            },
+            {
+                id: 24,
+                zone: "🔢 LOGIC ZONE",
+                question: "24. Kombinasi kode biner '1' dan '0' pada sakelar sirkuit digital melambangkan kondisi...",
+                options: [
+                    "A. 1 = Mati, 0 = Hidup",
+                    "B. 1 = Hidup (ON), 0 = Mati (OFF)",
+                    "C. 1 = Error, 0 = Sukses",
+                    "D. 1 = Lambat, 0 = Cepat"
+                ],
+                correct: 1,
+                explanation: "Dalam logika sirkuit digital, nilai 1 melambangkan sinyal True/ON (Hidup) dan 0 melambangkan False/OFF (Mati)."
+            },
+            {
+                id: 25,
+                zone: "🔢 LOGIC ZONE",
+                question: "25. Langkah awal sebelum mengumpulkan hasil ujian pada platform kuis ini adalah...",
+                options: [
+                    "A. Langsung menutup aplikasi browser",
+                    "B. Memeriksa kembali kelengkapan seluruh jawaban dengan teliti",
+                    "C. Menghapus akun pemain",
+                    "D. Mematikan koneksi internet"
+                ],
+                correct: 1,
+                explanation: "Selalu lakukan pengecekan akhir secara teliti sebelum menekan tombol Submit Mission!"
+            }
+        ];
+
+        // ================= APP INITIALIZATION =================
+        window.addEventListener('DOMContentLoaded', () => {
+            checkExistingSubmission();
+            renderMapNodes();
+        });
+
+        // View Switcher Function
+        function switchView(viewId) {
+            document.querySelectorAll('.page-view').forEach(view => {
+                view.classList.remove('active');
+            });
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // ================= PLAYER PROFILE & SINGLE ATTEMPT CHECK =================
+        function saveProfile(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('player-name').value.trim();
+            const classInput = document.getElementById('player-class').value;
+            const warningBox = document.getElementById('profile-warning');
+
+            if (!nameInput || !classInput) {
+                warningBox.classList.remove('hidden');
+                return;
+            }
+
+            playerProfile.name = nameInput;
+            playerProfile.class = classInput;
+
+            // Generate unique user ID
+            const userId = `IQ_${playerProfile.class}_${playerProfile.name.toLowerCase().replace(/\s+/g, '_')}`;
+
+            // Check if already completed in LocalStorage
+            if (localStorage.getItem(userId) === 'completed') {
+                switchView('view-completed');
+                return;
+            }
+
+            switchView('view-review');
+        }
+
+        function checkExistingSubmission() {
+            // Checked dynamically upon profile submit to allow multiple users on same browser
+        }
+
+        // ================= REVIEW PAGES LOGIC =================
+        function changeReviewPage(direction) {
+            const currentPgEl = document.getElementById(`review-page-${currentReviewPage}`);
+            currentPgEl.classList.add('hidden');
+
+            currentReviewPage += direction;
+
+            if (currentReviewPage < 1) currentReviewPage = 1;
+            if (currentReviewPage > 4) {
+                switchView('view-ready');
+                return;
+            }
+
+            const nextPgEl = document.getElementById(`review-page-${currentReviewPage}`);
+            nextPgEl.classList.remove('hidden');
+
+            // Update UI Dots & Labels
+            document.getElementById('review-step-label').innerText = `REVIEW 0${currentReviewPage} / 04`;
+            const dots = document.getElementById('review-dots').children;
+            for (let i = 0; i < dots.length; i++) {
+                if (i === currentReviewPage - 1) {
+                    dots[i].className = "w-2 h-2 rounded-full bg-cyan";
+                } else {
+                    dots[i].className = "w-2 h-2 rounded-full bg-slate-600";
+                }
+            }
+
+            // Update Prev Button state
+            document.getElementById('btn-review-prev').disabled = (currentReviewPage === 1);
+            if (currentReviewPage === 1) {
+                document.getElementById('btn-review-prev').className = "w-1/2 py-3 rounded-xl bg-slate-800 text-slate-500 font-bold text-xs flex items-center justify-center gap-2";
+            } else {
+                document.getElementById('btn-review-prev').className = "w-1/2 py-3 rounded-xl bg-navy-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-2 border border-white/10";
+            }
+        }
+
+        // ================= MISSION MAP LOGIC =================
+        function renderMapNodes() {
+            const container = document.getElementById('map-zones-container');
+            container.innerHTML = '';
+
+            const zones = [
+                { title: "🧠 MIND ZONE", range: "Mission 01–05", start: 0, end: 4 },
+                { title: "💻 DATA ZONE", range: "Mission 06–10", start: 5, end: 9 },
+                { title: "🌐 CYBER ZONE", range: "Mission 11–15", start: 10, end: 14 },
+                { title: "👣 SOCIAL ZONE", range: "Mission 16–20", start: 15, end: 19 },
+                { title: "🔢 LOGIC ZONE", range: "Mission 21–25", start: 20, end: 24 }
+            ];
+
+            zones.forEach((zone) => {
+                const zoneBox = document.createElement('div');
+                zoneBox.className = "glass-card p-4 rounded-2xl border border-white/10 space-y-3";
+
+                let nodesHtml = '';
+                for (let i = zone.start; i <= zone.end; i++) {
+                    let statusIcon = '🔒';
+                    let statusBg = 'bg-navy-900 border-slate-700 text-slate-500';
+
+                    if (userAnswers[i] !== null) {
+                        statusIcon = '✅';
+                        statusBg = 'bg-emerald-500/20 border-emerald-500 text-emerald-400';
+                    } else if (i === currentMissionIndex) {
+                        statusIcon = '🎯';
+                        statusBg = 'bg-cyan/20 border-cyan text-cyan animate-pulse';
+                    }
+
+                    nodesHtml += `
+                        <button onclick="jumpToMission(${i})" class="flex-1 py-2 rounded-xl border text-xs font-bold font-mono flex items-center justify-center gap-1 ${statusBg}">
+                            <span>${statusIcon}</span>
+                            <span>M${i + 1 < 10 ? '0' + (i + 1) : (i + 1)}</span>
+                        </button>
+                    `;
+                }
+
+                zoneBox.innerHTML = `
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-cyan font-title">${zone.title}</span>
+                        <span class="text-[10px] text-slate-400 font-mono">${zone.range}</span>
+                    </div>
+                    <div class="flex gap-1.5">
+                        ${nodesHtml}
+                    </div>
+                `;
+                container.appendChild(zoneBox);
+            });
+        }
+
+        function jumpToMission(index) {
+            // Allow navigating to answered questions or current active mission
+            if (index <= currentMissionIndex) {
+                loadMission(index);
+                switchView('view-mission');
+            }
+        }
+
+        function openCurrentMission() {
+            loadMission(currentMissionIndex);
+            switchView('view-mission');
+        }
+
+        // ================= MISSION & FEEDBACK LOGIC =================
+        function loadMission(index) {
+            const q = questionsData[index];
+            document.getElementById('mission-zone-badge').innerText = q.zone;
+            document.getElementById('mission-step-counter').innerText = `MISSION ${index + 1 < 10 ? '0' + (index + 1) : (index + 1)} / 25`;
+
+            // Progress Bar Width
+            const progressPct = ((index + 1) / 25) * 100;
+            document.getElementById('mission-progress-bar').style.width = `${progressPct}%`;
+
+            // Question Text
+            document.getElementById('question-text').innerText = q.question;
+
+            // Options Container
+            const optContainer = document.getElementById('options-container');
+            optContainer.innerHTML = '';
+
+            const isAnswered = (userAnswers[index] !== null);
+
+            q.options.forEach((opt, optIdx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full p-3.5 rounded-xl bg-navy-800/80 border border-white/10 text-left text-xs font-medium text-slate-200 flex items-center justify-between transition-all";
+                btn.innerHTML = `<span>${opt}</span><i class="fa-regular fa-circle text-slate-500 text-sm"></i>`;
+
+                if (!isAnswered) {
+                    btn.onclick = () => selectAnswer(index, optIdx);
+                } else {
+                    btn.disabled = true;
+                    // Apply visual state for answered question
+                    if (optIdx === q.correct) {
+                        btn.className = "w-full p-3.5 rounded-xl bg-emerald-500/20 border-2 border-emerald-500 text-left text-xs font-bold text-emerald-300 flex items-center justify-between";
+                        btn.innerHTML = `<span>${opt}</span><i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>`;
+                    } else if (optIdx === userAnswers[index] && optIdx !== q.correct) {
+                        btn.className = "w-full p-3.5 rounded-xl bg-magenta/20 border-2 border-magenta text-left text-xs font-bold text-magenta flex items-center justify-between";
+                        btn.innerHTML = `<span>${opt}</span><i class="fa-solid fa-circle-xmark text-magenta text-sm"></i>`;
+                    }
+                }
+
+                optContainer.appendChild(btn);
+            });
+
+            // Feedback Card State
+            const feedbackCard = document.getElementById('feedback-card');
+            const btnNext = document.getElementById('btn-next-mission');
+
+            if (isAnswered) {
+                showFeedbackUI(index, userAnswers[index]);
+                btnNext.disabled = false;
+                btnNext.className = "w-full py-3.5 rounded-xl btn-action text-white font-title font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2";
+            } else {
+                feedbackCard.classList.add('hidden');
+                btnNext.disabled = true;
+                btnNext.className = "w-full py-3.5 rounded-xl bg-slate-800 text-slate-500 font-title font-bold text-xs tracking-wider uppercase flex items-center justify-center gap-2";
+            }
+        }
+
+        function selectAnswer(qIndex, selectedOptIdx) {
+            if (userAnswers[qIndex] !== null) return; // Prevent double clicking
+
+            userAnswers[qIndex] = selectedOptIdx;
+            
+            // Lock UI and show result
+            loadMission(qIndex);
+            renderMapNodes();
+        }
+
+        function showFeedbackUI(qIndex, selectedOptIdx) {
+            const q = questionsData[qIndex];
+            const feedbackCard = document.getElementById('feedback-card');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackExp = document.getElementById('feedback-explanation');
+
+            feedbackCard.classList.remove('hidden');
+
+            if (selectedOptIdx === q.correct) {
+                feedbackCard.className = "glass-card p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-500/10 space-y-1.5 animate-pulse-slow";
+                feedbackTitle.className = "font-title font-extrabold text-sm text-emerald-400 flex items-center gap-2";
+                feedbackTitle.innerHTML = `<i class="fa-solid fa-circle-check"></i> 🎉 CORRECT!`;
+                feedbackExp.innerHTML = `<span class="font-bold text-emerald-300">Hebat! Jawabanmu benar.</span><br>${q.explanation}`;
+            } else {
+                feedbackCard.className = "glass-card p-4 rounded-2xl border-2 border-magenta bg-magenta/10 space-y-1.5 animate-shake";
+                feedbackTitle.className = "font-title font-extrabold text-sm text-magenta flex items-center gap-2";
+                feedbackTitle.innerHTML = `<i class="fa-solid fa-lightbulb"></i> 💡 NOT QUITE!`;
+                feedbackExp.innerHTML = `<span class="font-bold text-slate-200">Jawaban yang benar adalah: ${q.options[q.correct]}</span><br>${q.explanation}`;
+            }
+        }
+
+        function nextMission() {
+            if (currentMissionIndex < 24) {
+                currentMissionIndex++;
+                loadMission(currentMissionIndex);
+            } else {
+                switchView('view-final');
+            }
+        }
+
+        // ================= FINAL SUBMISSION & RESULT =================
+        function submitFinalResult() {
+            // Calculate Score
+            let correctCount = 0;
+            questionsData.forEach((q, idx) => {
+                if (userAnswers[idx] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            const wrongCount = 25 - correctCount;
+            score = Math.round((correctCount / 25) * 100);
+
+            // Populate Result UI
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('stat-correct').innerText = correctCount;
+            document.getElementById('stat-wrong').innerText = wrongCount;
+
+            // Trigger Confetti Animation
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            // Save Completion Flag to prevent re-submission
+            const userId = `IQ_${playerProfile.class}_${playerProfile.name.toLowerCase().replace(/\s+/g, '_')}`;
+            localStorage.setItem(userId, 'completed');
+
+            switchView('view-result');
+
+            // Send Data to Google Sheets Endpoint
+            sendDataToGoogleSheets(correctCount, wrongCount, score, userId);
+        }
+
+        function sendDataToGoogleSheets(correct, wrong, finalScore, id) {
+            const statusMsg = document.getElementById('submit-status-msg');
+
+            const payload = {
+                timestamp: new Date().toISOString(),
+                id: id,
+                nama: playerProfile.name,
+                kelas: playerProfile.class,
+                benar: correct,
+                salah: wrong,
+                nilai: finalScore
+            };
+
+            if (GOOGLE_SHEETS_ENDPOINT === "MASUKKAN_URL_WEB_APP_DI_SINI") {
+                statusMsg.innerText = "✓ Hasil tersimpan di aplikasi (URL Google Sheets belum diset).";
+                return;
+            }
+
+            fetch(GOOGLE_SHEETS_ENDPOINT, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                statusMsg.innerText = "✓ Data berhasil dikirim ke Google Sheets Guru!";
+            })
+            .catch((err) => {
+                console.error("Error sending data:", err);
+                statusMsg.innerText = "⚠️ Data tercatat lokal di perangkat.";
+            });
+        }
+    </script>
+</body>
+</html>
